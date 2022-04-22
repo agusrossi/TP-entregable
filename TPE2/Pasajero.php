@@ -44,7 +44,7 @@ class Pasajero {
         $this->nombre = $nombre;
     }
     public function __toString() {
-        $cadena = "Nombre: " . $this->getNombre() . "\n Apellido: " . $this->getApellido() . "\n DNI: " . $this->getNumDoc() . "\n Telefono: " . $this->getTelefono();
+        $cadena = "Nombre: " . $this->getNombre() . "\nApellido: " . $this->getApellido() . "\nDNI: " . $this->getNumDoc() . "\nTelefono: " . $this->getTelefono() . "\n";
         return $cadena;
     }
 }

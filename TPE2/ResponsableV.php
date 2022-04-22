@@ -47,7 +47,7 @@ class ResponsableV {
     }
 
     public function __toString() {
-        $cadena = "Nombre: " . $this->getNombre() . "\n Apellido: " . $this->getApellido() . "\n Numero empleado: " . $this->getNumEmpleado() . "\n Numero licencia: " . $this->getNumLicencia();
+        $cadena = "\nNombre: " . $this->getNombre() . "\nApellido: " . $this->getApellido() . "\nNumero empleado: " . $this->getNumEmpleado() . "\nNumero licencia: " . $this->getNumLicencia();
         return $cadena;
     }
 }

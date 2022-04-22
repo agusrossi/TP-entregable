@@ -3,8 +3,8 @@ include_once "Viaje.php";
 include_once "Pasajero.php";
 include_once "ResponsableV.php";
 
-function cargarPasajeros() {
-    $pasajeros = [
+function cargarPasajeros($cantMax) {
+    $preCarga = [
         new Pasajero("guido", "di fiore", 40899313, 2321),
         new Pasajero("agustina", "rossi", 40614534, 1234),
         new Pasajero("malena", "reza", 35211678, 7451),
@@ -15,7 +15,12 @@ function cargarPasajeros() {
         new Pasajero("dante", "perez", 60862673, 983670),
 
     ];
-
+    $pasajeros = [];
+    $i = 0;
+    while ($i < count($preCarga) && $i < $cantMax) {
+        $pasajeros[$i] = $preCarga[$i];
+        $i++;
+    }
     return $pasajeros;
 }
 function cargaResponsable() {
@@ -31,14 +36,13 @@ function cargaResponsable() {
 }
 
 
-
 function cargarViaje($destino) {
 
     $cod = random_int(0, 999999);
     $cantMax = random_int(0, 100);
-    $pasajeros = cargarPasajeros();
     $responsables = cargaResponsable();
     $resposableV = $responsables[random_int(0, 5)];
+    $pasajeros = cargarPasajeros($cantMax);
     $viaje = new Viaje($cod, $destino, $cantMax, $pasajeros, $resposableV);
     return $viaje;
 }
@@ -50,7 +54,7 @@ function cargarViajeAux() {
 }
 
 function opcionesMenu() {
-    echo 'Bienvenido a "Viaje Feliz" !!' . "\n";
+    echo "\n" . 'Bienvenido a "Viaje Feliz" !!' . "\n";
     echo "Elija una opcion del menú \n";
     echo "1- cargar informacion del viaje \n";
     echo "2- modificar informacion del viaje \n";
@@ -65,20 +69,20 @@ function elegirViaje($colViajes) {
     $i = 0;
     foreach ($colViajes as $viaje) {
         echo $i . " - " . $viaje->getDestino() . "\n";
+        $i++;
     }
     $respuesta = trim(fgets(STDIN));
-    return $respuesta;
+    return $colViajes[$respuesta];
 }
 
 
-function elegirPasajero($viaje) {
+function buscarPasajero($viaje, $dni) {
     $pasajeros = $viaje->getColPasajeros();
-    echo "Ingrese dni del pasajero que desea cambiar\n";
-    $dni = trim(fgets(STDIN));
+
     $i = 0;
     $pasajero = null;
-    while ($i < count($pasajeros) && $pasajero != null) {
-        if ($pasajeros[$i]->getDni() == $dni) {
+    while ($i < count($pasajeros) && $pasajero == null) {
+        if ($pasajeros[$i]->getNumDoc() == $dni) {
             $pasajero = $pasajeros[$i];
         }
         $i++;
@@ -100,7 +104,9 @@ function menu() {
 
             case 2:
                 //modificar informacion del viaje
+                $colViajes = modificarDatos($colViajes);
 
+                break;
 
             case 3:
                 //mostrar informacion del viaje
@@ -114,7 +120,9 @@ function menu() {
 
 
 function modificarPasajero($viaje) {
-    $pasajero = elegirPasajero($viaje);
+    echo "Ingrese dni del pasajero que desea cambiar\n";
+    $dni = trim(fgets(STDIN));
+    $pasajero = buscarPasajero($viaje, $dni);
     if ($pasajero != null) {
         echo "que desea modificar?\n";
         echo "1- apellido\n";
@@ -135,7 +143,7 @@ function modificarPasajero($viaje) {
             case 3:
                 echo "ingrese el nuevo dni\n";
                 $dni = trim(fgets(STDIN));
-                $pasajero->setDni($dni);
+                $pasajero->setNumDoc($dni);
                 break;
         }
     } else {
@@ -166,6 +174,19 @@ function modificarViaje($viaje) {
             echo "Nueva cantidad maxima de pasajeros: ";
             $cMax = trim(fgets(STDIN));
             $viaje->setCantMaxPasajero($cMax);
+            $pasajeros = $viaje->getColPasajeros();
+            if (count($pasajeros) > $viaje->getCantMaxPasajeros()) {
+                $colPasajeroN = [];
+                $i = 0;
+                while (count($colPasajeroN) < $viaje->getCantMaxPasajeros()) {
+                    $colPasajeroN[$i] = $pasajeros[$i];
+                    $i++;
+                }
+                //$pasajeros = array_slice($pasajeros, 0, $viaje->getCantMaxPasajeros());
+                $viaje->setColPasajeros($colPasajeroN);
+            }
+            echo $viaje;
+
             break;
         default:
             echo "Opcion incorrecta";
@@ -181,21 +202,22 @@ function agregarPasajero($viaje) {
     $dni = trim(fgets(STDIN));
     echo "ingrese el telefono del pasajero\n";
     $tel = trim(fgets(STDIN));
-    $nuevoPasajero = new Pasajero($nombre, $apellido, $dni, $tel);
-    if ($viaje->agregarPasajero($nuevoPasajero)) {
-        echo "el pasajero se ingreso con exito";
-    } else {
-        echo "no se pudo ingresar, el viaje esta lleno\n";
+    if (buscarPasajero($viaje, $dni) == null) {
+        $nuevoPasajero = new Pasajero($nombre, $apellido, $dni, $tel);
+        if ($viaje->agregarPasajero($nuevoPasajero)) {
+            echo "el pasajero se ingreso con exito";
+        } else {
+            echo "no se pudo ingresar, el viaje esta lleno\n";
+        }
     }
 }
-function modificarDatos($colViajes, $respuesta) {
+function modificarDatos($colViajes) {
     echo "1- modificar datos pasajeros\n";
     echo "2- modificar datos del viaje\n";
     echo "3- agregar otro pasajero\n";
     $respuesta = trim(fgets(STDIN));
     $exito = false;
-    $posViaje = elegirViaje($colViajes);
-    $viaje = $colViajes[$posViaje];
+    $viaje = elegirViaje($colViajes);
     switch ($respuesta) {
         case 1:
             modificarPasajero($viaje);
@@ -204,11 +226,11 @@ function modificarDatos($colViajes, $respuesta) {
             modificarViaje($viaje);
             break;
         case 3:
-
+            agregarPasajero($viaje);
             break;
         default:
             echo "respuesta incorrecta";
     };
-    break;
+    return $colViajes;
 }
 menu();

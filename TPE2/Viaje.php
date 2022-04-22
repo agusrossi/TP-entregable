@@ -39,7 +39,7 @@ class Viaje {
         $this->cantMaxPasajero = $cantMaxPasajero;
     }
 
-    function setColPasajero($colPasajeros) {
+    function setColPasajeros($colPasajeros) {
         $this->colPasajeros = $colPasajeros;
     }
     public function getResponsableV() {
@@ -51,20 +51,21 @@ class Viaje {
     }
 
     function __toString() {
-        $stringPasajeros = "";
-        for ($i = 0; $i < count($this->getColPasajeros()); $i++) {
-            $stringPasajeros = $stringPasajeros . "nombre y apellido: " . $this->getColPasajeros()[$i]["nombre"] . "  " . $this->getColPasajeros()[$i]["apellido"] . "  dni: " . $this->getColPasajeros()[$i]["dni"] . "\n";
-        }
-        return ("el viaje con destino a {$this->getDestino()} codigo: {$this->getCodigo()} con cant maxima de pasajeros: {$this->getCantMaxPasajeros()} y los pasajeros son: \n{$stringPasajeros}");
+        $cadena = "\nDestino: " . $this->getDestino() . "\nCodigo: " . $this->getCodigo() . "\nCantidad maxima de pasajeros: " . $this->getCantMaxPasajeros() . "\nResponsable del viaje: " . $this->getResponsableV() . "\nPasajeros: \n" . implode("\n", $this->getColPasajeros());
+        return $cadena;
     }
-    
 
+    public function stringPasajeros() {
+        foreach ($this->getColPasajeros() as $pasajero) {
+            echo $pasajero . "\n";
+        }
+    }
     function agregarPasajero($nuevoPasajero) {
         $exito = false;
         $pasajeros = $this->getColPasajeros();
         if (count($this->getColPasajeros()) < $this->getCantMaxPasajeros()) {
             array_push($pasajeros, $nuevoPasajero);
-            $this->setColPasajero($pasajeros);
+            $this->setColPasajeros($pasajeros);
             $exito = true;
         }
         return $exito;
