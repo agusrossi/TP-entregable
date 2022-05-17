@@ -61,7 +61,8 @@ class ViajeAereo extends Viaje {
       } else {
         $importe += $importe * 0.60;
       }
-      return $importe;
+      $this->setImporte($importe);
     }
+    return $importe;
   }
 }

@@ -26,6 +26,7 @@ class ViajeTerreste extends Viaje {
           $importe = parent::venderPasaje($pasajero);
           if ($this->getComodidad() == "cama") {
                $importe += $importe * 0.25;
+               $this->setImporte($importe);
           }
           return $importe;
      }

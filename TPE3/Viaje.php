@@ -99,6 +99,7 @@ class Viaje {
             if ($this->getIdaYVuelta()) {
                 $importe += ($importe * 0.5);
             }
+            $this->setImporte($importe);
         }
         return $importe;
     }
